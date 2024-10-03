@@ -11,7 +11,6 @@
  *****************************************************************************/
 #include <Arduino.h>
 #include <M5Atom.h>
-
 #include "udp_client.h"
 
 /******************************************************************************
@@ -33,15 +32,18 @@
 /******************************************************************************
  * File Scope variables and functions
  *****************************************************************************/
-static void reset_all_main(void);
 CRGB dispColor(uint8_t g, uint8_t r, uint8_t b);
 
-// TaskHandle_t task_handl;
+volatile bool button19Pressed = false;
+volatile bool button23Pressed = false;
 
-typedef struct {
-  bool pinPrev;
-} st_prv;
-static st_prv prv;
+void IRAM_ATTR handleButton19Interrupt() {
+  button19Pressed = digitalRead(PIN_19) == LOW;
+}
+
+void IRAM_ATTR handleButton23Interrupt() {
+  button23Pressed = digitalRead(PIN_23) == LOW;
+}
 
 /******************************************************************************
  * Function Name: setup
@@ -56,12 +58,12 @@ void setup() {
 
   M5.dis.drawpix(0, dispColor(0, 0, 0));
 
-  reset_all_main();
-
   // INPUT
   pinMode(PIN_19, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_19), handleButton19Interrupt, CHANGE);
+
   pinMode(PIN_23, INPUT_PULLUP);
-  pinMode(PIN_33, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_23), handleButton23Interrupt, CHANGE);
 
   // OUTPUT
   pinMode(PIN_22, OUTPUT);
@@ -77,60 +79,26 @@ void setup() {
  * Return Value : none
  *****************************************************************************/
 void loop() {
-  st_prv *p_prv = &prv;
   st_udp_client *p_udp_client = &g_udp_client;
 
-  static const uint8_t brightness = 0xFF;
-  static bool pinState = false;
-
-  // M5.dis.drawpix(0, dispColor(0, brightness, brightness));
-
-  // 処理速度低下防止のためレジスタへのアクセスは最小限にする構造で実装すること
-  // LED turn ON
-  if (digitalRead(PIN_19) == 0) {
-    pinState = true;
-    if (pinState != p_prv->pinPrev) {
-      // LED HIGH
-      digitalWrite(PIN_22, HIGH);
-      p_prv->pinPrev = true;
-    }
+  if (button19Pressed) {
+    digitalWrite(PIN_22, HIGH);
   } else {
-    pinState = false;
-    if (pinState != p_prv->pinPrev) {
-      // LED LOW
-      digitalWrite(PIN_22, LOW);
-      p_prv->pinPrev = false;
-    }
+    digitalWrite(PIN_22, LOW);
   }
 
-  // Command send move trank to server
-  if (digitalRead(PIN_23) == 0) {
+  if (button23Pressed) {
     p_udp_client->isSetSendUdp = true;
     udp_client_send(MOVE_TRANK);
-
   } else {
     p_udp_client->isSetSendUdp = true;
     udp_client_send(IDLE_LOOP);
   }
 
-  // Command send close trank to server
-
-  delay(10);
-
   // If wifi fails to connect, try reconnecting.
   udp_client_wifi_conCheck();
-}
 
-/******************************************************************************
- * Function Name: reset_all_main
- * Description  : メインループ処理
- * Arguments    : none
- * Return Value : none
- *****************************************************************************/
-static void reset_all_main(void) {
-  st_prv *p_prv = &prv;
-
-  p_prv->pinPrev = false;
+  delay(10);
 }
 
 /******************************************************************************
