@@ -1,0 +1,37 @@
+Standard: c++14
+
+# 基本スタイル
+BasedOnStyle: Google
+
+# フォーマットスタイルの言語
+Language: Cpp
+
+# 1行の最大文字数(0なら無制限）
+#ColumnLimit: 0
+
+# 連続する = の位置を揃える
+#AlignConsecutiveAssignments: Consecutive
+
+# 連続する宣言の要素の位置を揃える
+#AlignConsecutiveDeclarations: Consecutive
+
+# 連続したマクロの内容を揃える
+#AlignConsecutiveMacros: Consecutive
+
+# インデント数
+#IndentWidth: 2
+
+# switch文の中の case ラベルをインデントする
+#IndentCaseLabels: true
+
+# 末尾のコメント行を揃える
+#AlignTrailingComments: true
+
+# 簡単なif分を1行で表現
+#AllowShortBlocksOnASingleLine: true
+
+# 短いcaseラベルを1行で表現
+#AllowShortCaseLabelsOnASingleLine: true
+
+# r_cg_userdefine.h に順序依存性があるのでインクルードの順序を変更しない 
+#SortIncludes: false

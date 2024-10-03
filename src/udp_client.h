@@ -1,23 +1,38 @@
+/*******************************************************************************
+ * File Name    : udp_client.h
+ * Description  : LQR制御の実装
+ ******************************************************************************
+ * 変更履歴 : DD.MM.YYYY Version Description
+ *          : 2024.07.19 1.00 K.Mikamoto 新設
+ *****************************************************************************/
 #ifndef _UDP_CLIENT_H_
 #define _UDP_CLIENT_H_
 
-// Macro define
+/******************************************************************************
+ * Macro definitions
+ *****************************************************************************/
 #define USER_SSID "aaatamadic"
 #define PASSWORD "aaatamadic"
 
-// Global variables
-typedef struct
-{
+/******************************************************************************
+ * Typedef definitions
+ *****************************************************************************/
+typedef struct {
   bool connected;
   bool isSetSendUdp;
 
-}st_udp_client;
+} st_udp_client;
+
+/******************************************************************************
+ * Global variables
+ *****************************************************************************/
 extern st_udp_client g_udp_client;
 
-// Global functions
+/******************************************************************************
+ * Global functions
+ *****************************************************************************/
 extern void udp_client_open(void);
 extern void udp_client_send(int data);
-
 extern void udp_client_wifi_conCheck(void);
 
-#endif // _UDP_CLIENT_H_
+#endif  // _UDP_CLIENT_H_
